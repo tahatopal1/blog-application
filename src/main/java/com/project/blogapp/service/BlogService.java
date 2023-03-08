@@ -8,9 +8,9 @@ public interface BlogService {
 
     void saveBlog(BlogDTO blogDTO);
 
-    List<BlogDTO> getAllBlogPostsWithSummaries();
+    List<BlogDTO> getAllBlogPostByUsernameWithSummaries(String username);
 
-    List<BlogDTO> getAllBlogPosts();
+    List<BlogDTO> getAllBlogPostsByUsername(String username);
 
     void updateBlog(Long blogId, BlogDTO blogDTO);
 

@@ -2,6 +2,7 @@ package com.project.blogapp.controller;
 
 import com.project.blogapp.dto.BlogDTO;
 import com.project.blogapp.service.BlogService;
+import com.project.blogapp.service.UserService;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -17,6 +18,8 @@ import java.util.List;
 public class BlogController {
 
     private BlogService blogService;
+
+    private UserService userService;
 
     @PostMapping
     public ResponseEntity saveBlog(@RequestBody BlogDTO blogDTO){
@@ -42,15 +45,15 @@ public class BlogController {
         return new ResponseEntity(HttpStatus.ACCEPTED);
     }
 
-    @GetMapping("/summaries")
-    public ResponseEntity getAllSummaries(){
-        List<BlogDTO> blogPostSummaries = blogService.getAllBlogPostsWithSummaries();
+    @GetMapping("/summaries/{username}")
+    public ResponseEntity getAllSummariesByUsername(@PathVariable("username") String username){
+        List<BlogDTO> blogPostSummaries = blogService.getAllBlogPostByUsernameWithSummaries(username);
         return new ResponseEntity(blogPostSummaries, HttpStatus.OK);
     }
 
-    @GetMapping
-    public ResponseEntity getAllBlogPosts(){
-        List<BlogDTO> blogs = blogService.getAllBlogPosts();
+    @GetMapping("/{username}")
+    public ResponseEntity getAllBlogPosts(@PathVariable("username") String username){
+        List<BlogDTO> blogs = blogService.getAllBlogPostsByUsername(username);
         return new ResponseEntity(blogs, HttpStatus.OK);
     }
 

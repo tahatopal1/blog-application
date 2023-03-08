@@ -1,6 +1,7 @@
 package com.project.blogapp.dto;
 
 import lombok.*;
+import lombok.experimental.SuperBuilder;
 
 import java.util.Set;
 
@@ -8,10 +9,9 @@ import java.util.Set;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-@Builder
-public class BlogDTO {
+@SuperBuilder
+public class BlogDTO extends BaseEntityDTO{
 
-    private Long id;
     private String title;
     private String content;
     private Set<String> tags;
