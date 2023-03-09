@@ -4,6 +4,7 @@ import com.project.blogapp.dto.UserDTO;
 import com.project.blogapp.entity.User;
 import com.project.blogapp.repository.UserRepository;
 import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -14,6 +15,7 @@ import org.springframework.stereotype.Component;
 
 @Component
 @AllArgsConstructor
+@Slf4j
 public class UserServiceImpl implements UserService {
 
     private UserRepository userRepository;
@@ -23,12 +25,16 @@ public class UserServiceImpl implements UserService {
     @Override
     public void registerUser(UserDTO userDTO) {
 
-        if (userRepository.findByUsername(userDTO.getUsername()).isPresent()){
-            throw new RuntimeException("username is already in use");
+        log.info("{} - registerUser method is working", this.getClass().getSimpleName());
+        String username = userDTO.getUsername();
+
+        if (userRepository.findByUsername(username).isPresent()){
+            log.error("{} - Username is already in use: {}", this.getClass().getSimpleName(), username);
+            throw new RuntimeException("Username is already in use: " + username);
         }
 
         User user = User.builder()
-                .username(userDTO.getUsername())
+                .username(username)
                 .password(passwordEncoder.encode(userDTO.getPassword()))
                 .displayName(userDTO.getDisplayName())
                 .build();

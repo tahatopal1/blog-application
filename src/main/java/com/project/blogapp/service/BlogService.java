@@ -19,4 +19,8 @@ public interface BlogService {
     void addTag(Long blogId, Long tagId);
 
     void discardTag(Long blogId, Long tagId);
+
+    BlogDTO getBlogById(Long id);
+
+    void deleteBlogById(Long id);
 }

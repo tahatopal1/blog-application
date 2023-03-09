@@ -44,7 +44,10 @@ public class SecurityConfig {
                 .addFilterBefore(new JWTTokenValidatorFilter(), BasicAuthenticationFilter.class)
                 .addFilterAfter(new JWTTokenGeneratorFilter(), BasicAuthenticationFilter.class)
                 .authorizeHttpRequests(registry ->
-                        registry.requestMatchers(HttpMethod.POST, "/signup").permitAll()
+                        registry
+//                                .requestMatchers("/swagger-ui/**", "/*.js", "/*.html", "/*.css", "/v3/api-docs/**","/error").permitAll()
+                                .requestMatchers("/swagger-ui/**","/v3/api-docs/**","/error").permitAll()
+                                .requestMatchers(HttpMethod.POST, "/signup").permitAll()
                                 .requestMatchers("/api/blog/**").hasAuthority("GENERIC")
                                 .requestMatchers("/login").authenticated()
                 ).httpBasic(Customizer.withDefaults());
