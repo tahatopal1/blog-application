@@ -21,6 +21,7 @@ public class Blog extends BaseEntity{
     private String title;
 
     @Lob
+    @Column(columnDefinition = "LONGTEXT")
     private String content;
 
     @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE})

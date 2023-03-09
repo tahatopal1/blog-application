@@ -44,5 +44,4 @@ public class JWTTokenGeneratorFilter extends OncePerRequestFilter {
         return !ApplicationConstants.PERMITTED_ENDPOINTS.contains(request.getServletPath());
     }
 
-
 }

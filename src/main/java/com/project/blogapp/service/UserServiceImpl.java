@@ -6,8 +6,10 @@ import com.project.blogapp.repository.UserRepository;
 import lombok.AllArgsConstructor;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -15,14 +17,8 @@ import org.springframework.stereotype.Component;
 public class UserServiceImpl implements UserService {
 
     private UserRepository userRepository;
-
-    private BCryptPasswordEncoder passwordEncoder;
-
-    @Override
-    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        return userRepository.findByUsername(username)
-                .orElseThrow(() -> new UsernameNotFoundException("User details not found for the user: " + username));
-    }
+    private PasswordEncoder passwordEncoder;
+    private UserDetailsService userDetailsService;
 
     @Override
     public void registerUser(UserDTO userDTO) {
@@ -42,7 +38,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public User getUserFromContextHolder() {
         String username = this.getUsernameFromContextHolder();
-        return (User) this.loadUserByUsername(username);
+        return (User) userDetailsService.loadUserByUsername(username);
     }
 
     @Override
