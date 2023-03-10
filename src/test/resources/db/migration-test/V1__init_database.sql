@@ -11,7 +11,7 @@ create table _user
     user_name          VARCHAR(255) NOT NULL,
     pass               VARCHAR(255) NOT NULL,
     display_name       VARCHAR(255) NOT NULL
-);
+) engine = InnoDB;
 
 create table blog
 (
@@ -22,7 +22,7 @@ create table blog
     content            LONGTEXT     NOT NULL,
     user_id            bigint,
     CONSTRAINT FK_user FOREIGN KEY (user_id) REFERENCES _user (id)
-);
+) engine = InnoDB;
 
 
 create table tag
@@ -31,7 +31,7 @@ create table tag
     created_date       datetime,
     last_modified_date datetime,
     tag_name           VARCHAR(255) NOT NULL
-);
+) engine = InnoDB;
 
 create table blog_tag
 (
@@ -40,4 +40,4 @@ create table blog_tag
     CONSTRAINT blog_tag_pk PRIMARY KEY (blog_id, tag_id),
     CONSTRAINT FK_blog FOREIGN KEY (blog_id) REFERENCES blog (id),
     CONSTRAINT FK_tag FOREIGN KEY (tag_id) REFERENCES tag (id)
-);
+) engine = InnoDB;

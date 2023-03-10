@@ -3,17 +3,23 @@ package com.project.blogapp.service;
 import com.project.blogapp.dto.BlogDTO;
 import com.project.blogapp.entity.Blog;
 import com.project.blogapp.entity.Tag;
+import com.project.blogapp.entity.User;
 import com.project.blogapp.mapper.blog.BlogDTOToBlogMapper;
 import com.project.blogapp.mapper.blog.BlogToBlogDTOMapper;
 import com.project.blogapp.repository.BlogRepository;
 import com.project.blogapp.repository.TagRepository;
+import com.project.blogapp.repository.UserRepository;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.IntStream;
@@ -37,8 +43,26 @@ public class BlogServiceTest {
     @Mock
     private BlogToBlogDTOMapper blogToBlogDTOMapper;
 
+    @Mock
+    private UserService userService;
+
+    @Mock
+    private UserRepository userRepository;
+
     @InjectMocks
     private BlogServiceImpl blogService;
+
+    private User user;
+
+    @BeforeEach
+    void beforeAll() {
+        user = User.builder()
+                .username("testuser")
+                .password(new BCryptPasswordEncoder(10).encode("password"))
+                .displayName("testuser")
+                .blogs(new HashSet<>())
+                .build();
+    }
 
     // JUnit test for saveBlog method
     @Test
@@ -55,13 +79,40 @@ public class BlogServiceTest {
                 .content("Blog Content")
                 .build();
 
+        given(userService.getUserFromContextHolder()).willReturn(user);
         given(blogDTOToBlogMapper.map(blogDTO)).willReturn(blog);
 
         // when - action or the behaviour that we are going to test
         blogService.saveBlog(blogDTO);
 
         // then - verify the output
-        verify(blogRepository, times(1)).save(blog);
+        verify(userRepository, times(1)).save(user);
+
+    }
+
+    // JUnit test for getAllByUsername
+    @Test
+    public void givenBlogList_whenGetAllBlogPosts_thenReturnBlogList(){
+
+        // given - precondition or setup
+        Blog blog = Blog.builder()
+                .title("Blog Title")
+                .content("Blog Content")
+                .build();
+
+        Blog blog2 = Blog.builder()
+                .title("Blog Title 2")
+                .content("Blog Content 2")
+                .build();
+
+        given(blogRepository.getAllByUsername(user.getUsername())).willReturn(List.of(blog, blog2));
+
+        // when - action or the behaviour that we are going to test
+        List<BlogDTO> blogList = blogService.getAllBlogPostsByUsername(user.getUsername());
+
+        // then - verify the output
+        assertThat(blogList).isNotNull();
+        assertThat(blogList.size()).isEqualTo(2);
 
     }
 
@@ -80,36 +131,10 @@ public class BlogServiceTest {
                 .content("Blog Content 2")
                 .build();
 
-        given(blogRepository.findAll()).willReturn(List.of(blog, blog2));
+        given(blogRepository.getAllByUsername(user.getUsername())).willReturn(List.of(blog, blog2));
 
         // when - action or the behaviour that we are going to test
-//        List<BlogDTO> blogList = blogService.getAllBlogPostsWithSummaries();
-
-        // then - verify the output
-//        assertThat(blogList).isNotNull();
-//        assertThat(blogList.size()).isEqualTo(2);
-
-    }
-
-    // JUnit test for getAllBlogPostsWithSummaries
-    @Test
-    public void givenBlogList_whenGetAllBlogPosts_thenReturnBlogList(){
-
-        // given - precondition or setup
-        Blog blog = Blog.builder()
-                .title("Blog Title")
-                .content("Blog Content")
-                .build();
-
-        Blog blog2 = Blog.builder()
-                .title("Blog Title 2")
-                .content("Blog Content 2")
-                .build();
-
-        given(blogRepository.findAll()).willReturn(List.of(blog, blog2));
-
-        // when - action or the behaviour that we are going to test
-        List<BlogDTO> blogList = blogService.getAllBlogPostsByUsername(null);
+        List<BlogDTO> blogList = blogService.getAllBlogPostByUsernameWithSummaries(user.getUsername());
 
         // then - verify the output
         assertThat(blogList).isNotNull();
@@ -123,6 +148,7 @@ public class BlogServiceTest {
 
         // given - precondition or setup
         Blog blog = Blog.builder()
+                .id(1L)
                 .title("Blog Title")
                 .content("Blog Content")
                 .build();
@@ -132,8 +158,10 @@ public class BlogServiceTest {
                 .content("Blog Content Updated")
                 .build();
 
+        given(userService.getUsernameFromContextHolder())
+                .willReturn(user.getUsername());
 
-        given(blogRepository.findById(blog.getId()))
+        given(blogRepository.getBlogByIdAndUsername(blog.getId(), user.getUsername()))
                 .willReturn(Optional.of(blog));
 
         // when - action or the behaviour that we are going to test
@@ -155,7 +183,10 @@ public class BlogServiceTest {
                 .content("Blog Content Updated")
                 .build();
 
-        given(blogRepository.findById(givenId))
+        given(userService.getUsernameFromContextHolder())
+                .willReturn(user.getUsername());
+
+        given(blogRepository.getBlogByIdAndUsername(givenId, user.getUsername()))
                 .willReturn(Optional.empty());
 
         // when - action or the behaviour that we are going to test
@@ -237,7 +268,10 @@ public class BlogServiceTest {
                 .tag_name("Tag 1")
                 .build();
 
-        given(blogRepository.findById(blog.getId()))
+        given(userService.getUsernameFromContextHolder())
+                .willReturn(user.getUsername());
+
+        given(blogRepository.getBlogByIdAndUsername(blog.getId(), user.getUsername()))
                 .willReturn(Optional.of(blog));
 
         given(tagRepository.findById(tag.getId()))
@@ -262,7 +296,10 @@ public class BlogServiceTest {
         long blogId = 1L;
         long tagId = 1L;
 
-        given(blogRepository.findById(blogId))
+        given(userService.getUsernameFromContextHolder())
+                .willReturn(user.getUsername());
+
+        given(blogRepository.getBlogByIdAndUsername(blogId, user.getUsername()))
                 .willReturn(Optional.empty());
 
         // when - action or the behaviour that we are going to test
@@ -288,7 +325,10 @@ public class BlogServiceTest {
 
         long tagId = 1L;
 
-        given(blogRepository.findById(blog.getId()))
+        given(userService.getUsernameFromContextHolder())
+                .willReturn(user.getUsername());
+
+        given(blogRepository.getBlogByIdAndUsername(blog.getId(), user.getUsername()))
                 .willReturn(Optional.of(blog));
 
         given(tagRepository.findById(tagId))
@@ -320,7 +360,10 @@ public class BlogServiceTest {
 
         blog.getTags().add(tag);
 
-        given(blogRepository.findById(blog.getId()))
+        given(userService.getUsernameFromContextHolder())
+                .willReturn(user.getUsername());
+
+        given(blogRepository.getBlogByIdAndUsername(blog.getId(), user.getUsername()))
                 .willReturn(Optional.of(blog));
 
         given(tagRepository.findById(tag.getId()))
@@ -345,12 +388,14 @@ public class BlogServiceTest {
         long blogId = 1L;
         long tagId = 1L;
 
-        given(blogRepository.findById(blogId))
+        given(userService.getUsernameFromContextHolder())
+                .willReturn(user.getUsername());
+
+        given(blogRepository.getBlogByIdAndUsername(blogId, user.getUsername()))
                 .willReturn(Optional.empty());
 
         // when - action or the behaviour that we are going to test
         assertThrows(RuntimeException.class, () -> blogService.discardTag(blogId, tagId));
-
 
         // then - verify the output
         verify(tagRepository, never()).findById(tagId);
@@ -371,7 +416,10 @@ public class BlogServiceTest {
 
         long tagId = 1L;
 
-        given(blogRepository.findById(blog.getId()))
+        given(userService.getUsernameFromContextHolder())
+                .willReturn(user.getUsername());
+
+        given(blogRepository.getBlogByIdAndUsername(blog.getId(), user.getUsername()))
                 .willReturn(Optional.of(blog));
 
         given(tagRepository.findById(tagId))
