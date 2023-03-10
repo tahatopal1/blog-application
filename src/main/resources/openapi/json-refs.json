@@ -1,13 +1,4 @@
 {
-  "signupRequest": {
-    "username": "testuser",
-    "password": "password",
-    "displayName": "testuser"
-  },
-  "blogRequest": {
-    "title": "Blog Title",
-    "content": "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Curabitur fringilla pretium sem. Morbi euismod fermentum massa. Sed imperdiet magna nibh. In dictum convallis aliquet. Vestibulum varius imperdiet metus at venenatis. Ut ultrices mauris vitae dolor porta, sit amet faucibus metus maximus. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed elementum lobortis cursus. Phasellus a risus nec elit egestas vestibulum. Nulla pharetra luctus ipsum, at commodo elit suscipit id. Nam arcu ipsum, dignissim non facilisis id, maximus ullamcorper diam. Donec libero elit, pharetra a porttitor semper, convallis in ipsum."
-  },
   "genericErrorResponse": {
     "timestamp": "2023-03-01T20:08:18",
     "message": "Generic message",

@@ -66,26 +66,13 @@ public class SpringDocConfig {
                                 new Example().value(readJsonFileToJsonObject.read().get("blogListSummaryResponse").toString())))
         );
 
-        ApiResponse blogRequestAPI = new ApiResponse().content(
-                new Content().addMediaType(MediaType.APPLICATION_JSON_VALUE,
-                        new io.swagger.v3.oas.models.media.MediaType().addExamples("default",
-                                new Example().value(readJsonFileToJsonObject.read().get("blogRequest").toString())))
-        );
-
-        ApiResponse signupRequestAPI = new ApiResponse().content(
-                new Content().addMediaType(MediaType.APPLICATION_JSON_VALUE,
-                        new io.swagger.v3.oas.models.media.MediaType().addExamples("default",
-                                new Example().value(readJsonFileToJsonObject.read().get("signupRequest").toString())))
-        );
-
         Components components = new Components();
         components.addResponses("genericErrorAPI",genericErrorAPI);
         components.addResponses("badRequestResponseAPI",badRequestResponseAPI);
         components.addResponses("blogResponseAPI",blogResponseAPI);
         components.addResponses("blogListResponseAPI",blogListResponseAPI);
         components.addResponses("blogListSummaryResponseAPI",blogListSummaryResponseAPI);
-        components.addResponses("blogRequestAPI",blogRequestAPI);
-        components.addResponses("signupRequestAPI",signupRequestAPI);
+
 
         return new OpenAPI()
                 .components(components)

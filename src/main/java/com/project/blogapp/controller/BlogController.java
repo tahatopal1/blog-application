@@ -4,6 +4,8 @@ import com.project.blogapp.dto.BlogDTO;
 import com.project.blogapp.service.BlogService;
 import com.project.blogapp.service.UserService;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.ExampleObject;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.AllArgsConstructor;
@@ -34,8 +36,16 @@ public class BlogController {
                     @ApiResponse(responseCode = "201", description = "Created!")
             }
     )
-    public ResponseEntity saveBlog(@io.swagger.v3.oas.annotations.parameters.RequestBody(ref = "blogRequestAPI")
-                                       @RequestBody BlogDTO blogDTO){
+    public ResponseEntity saveBlog(@io.swagger.v3.oas.annotations.parameters.RequestBody(
+            content = @Content(
+                    mediaType = "application/json",
+                    examples = {
+                            @ExampleObject(
+                                    value = "{\"title\" : \"Blog Title\", \"content\" : \"Really long content...\"}"
+                            ),
+                    }
+            ))
+            @RequestBody BlogDTO blogDTO) {
         blogService.saveBlog(blogDTO);
         return new ResponseEntity(HttpStatus.CREATED);
     }
@@ -50,7 +60,7 @@ public class BlogController {
             }
     )
     public ResponseEntity updateBlogContent(@PathVariable(value = "id") Long blogId,
-                                            @io.swagger.v3.oas.annotations.parameters.RequestBody(ref = "blogRequestAPI") @RequestBody BlogDTO blogDTO){
+                                            @io.swagger.v3.oas.annotations.parameters.RequestBody(ref = "blogRequestAPI") @RequestBody BlogDTO blogDTO) {
         blogService.updateBlog(blogId, blogDTO);
         return new ResponseEntity(HttpStatus.ACCEPTED);
     }
@@ -64,7 +74,7 @@ public class BlogController {
                     @ApiResponse(responseCode = "202", description = "Accepted!")
             }
     )
-    public ResponseEntity addTag(@PathVariable(value = "id") Long blogId, @PathVariable(value = "tagId") Long tagId){
+    public ResponseEntity addTag(@PathVariable(value = "id") Long blogId, @PathVariable(value = "tagId") Long tagId) {
         blogService.addTag(blogId, tagId);
         return new ResponseEntity(HttpStatus.ACCEPTED);
     }
@@ -78,7 +88,7 @@ public class BlogController {
                     @ApiResponse(responseCode = "202", description = "Accepted!")
             }
     )
-    public ResponseEntity discardTag(@PathVariable(value = "id") Long blogId, @PathVariable(value = "tagId") Long tagId){
+    public ResponseEntity discardTag(@PathVariable(value = "id") Long blogId, @PathVariable(value = "tagId") Long tagId) {
         blogService.discardTag(blogId, tagId);
         return new ResponseEntity(HttpStatus.ACCEPTED);
     }
@@ -92,7 +102,7 @@ public class BlogController {
                     @ApiResponse(responseCode = "200", ref = "blogListSummaryResponseAPI")
             }
     )
-    public ResponseEntity getAllSummariesByUsername(@PathVariable("username") String username){
+    public ResponseEntity getAllSummariesByUsername(@PathVariable("username") String username) {
         List<BlogDTO> blogPostSummaries = blogService.getAllBlogPostByUsernameWithSummaries(username);
         return new ResponseEntity(blogPostSummaries, HttpStatus.OK);
     }
@@ -106,7 +116,7 @@ public class BlogController {
                     @ApiResponse(responseCode = "200", ref = "blogListResponseAPI")
             }
     )
-    public ResponseEntity getAllBlogPosts(@PathVariable("username") String username){
+    public ResponseEntity getAllBlogPosts(@PathVariable("username") String username) {
         List<BlogDTO> blogs = blogService.getAllBlogPostsByUsername(username);
         return new ResponseEntity(blogs, HttpStatus.OK);
     }
@@ -120,7 +130,7 @@ public class BlogController {
                     @ApiResponse(responseCode = "200", ref = "blogListResponseAPI")
             }
     )
-    public ResponseEntity getAllBlogPostsByTags(@PathVariable(value = "id") Long tagId){
+    public ResponseEntity getAllBlogPostsByTags(@PathVariable(value = "id") Long tagId) {
         List<BlogDTO> blogs = blogService.getAllBlogPostsByTag(tagId);
         return new ResponseEntity(blogs, HttpStatus.OK);
     }
@@ -134,7 +144,7 @@ public class BlogController {
                     @ApiResponse(responseCode = "200", ref = "blogResponseAPI")
             }
     )
-    public ResponseEntity getBlog(@PathVariable(value = "id") Long id){
+    public ResponseEntity getBlog(@PathVariable(value = "id") Long id) {
         BlogDTO blog = blogService.getBlogById(id);
         return new ResponseEntity(blog, HttpStatus.OK);
     }
@@ -148,7 +158,7 @@ public class BlogController {
                     @ApiResponse(responseCode = "200", ref = "blogResponseAPI")
             }
     )
-    public ResponseEntity deleteBlog(@PathVariable(value = "id") Long id){
+    public ResponseEntity deleteBlog(@PathVariable(value = "id") Long id) {
         blogService.deleteBlogById(id);
         return new ResponseEntity(HttpStatus.OK);
     }

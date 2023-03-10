@@ -4,6 +4,8 @@ import com.project.blogapp.dto.LoginRequest;
 import com.project.blogapp.dto.UserDTO;
 import com.project.blogapp.service.UserService;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.ExampleObject;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -48,7 +50,15 @@ public class LoginController {
                     @ApiResponse(responseCode = "202", description = "Accepted!")
             }
     )
-    public ResponseEntity registerUser(@Valid @io.swagger.v3.oas.annotations.parameters.RequestBody(ref = "signupRequestAPI") @RequestBody UserDTO userDTO){
+    public ResponseEntity registerUser(@Valid @io.swagger.v3.oas.annotations.parameters.RequestBody(
+            content = @Content(
+                    mediaType = "application/json",
+                    examples = {
+                            @ExampleObject(
+                                    value = "{\"username\" : \"testuser\", \"password\" : \"password\", \"displayName\" : \"testuser\"}"
+                            ),
+                    }
+            )) @RequestBody UserDTO userDTO){
         userService.registerUser(userDTO);
         return ResponseEntity.accepted().build();
     }
