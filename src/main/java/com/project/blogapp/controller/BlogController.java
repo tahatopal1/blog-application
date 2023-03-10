@@ -7,6 +7,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.ExampleObject;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -34,7 +35,8 @@ public class BlogController {
                     @ApiResponse(responseCode = "400", ref = "badRequestResponseAPI"),
                     @ApiResponse(responseCode = "500", ref = "genericErrorAPI"),
                     @ApiResponse(responseCode = "201", description = "Created!")
-            }
+            },
+            security = @SecurityRequirement(name = "token")
     )
     public ResponseEntity saveBlog(@io.swagger.v3.oas.annotations.parameters.RequestBody(
             content = @Content(
@@ -57,7 +59,8 @@ public class BlogController {
                     @ApiResponse(responseCode = "400", ref = "badRequestResponseAPI"),
                     @ApiResponse(responseCode = "500", ref = "genericErrorAPI"),
                     @ApiResponse(responseCode = "202", description = "Accepted!")
-            }
+            },
+            security = @SecurityRequirement(name = "token")
     )
     public ResponseEntity updateBlogContent(@PathVariable(value = "id") Long blogId,
                                             @io.swagger.v3.oas.annotations.parameters.RequestBody(ref = "blogRequestAPI") @RequestBody BlogDTO blogDTO) {
@@ -72,7 +75,8 @@ public class BlogController {
                     @ApiResponse(responseCode = "400", ref = "badRequestResponseAPI"),
                     @ApiResponse(responseCode = "500", ref = "genericErrorAPI"),
                     @ApiResponse(responseCode = "202", description = "Accepted!")
-            }
+            },
+            security = @SecurityRequirement(name = "token")
     )
     public ResponseEntity addTag(@PathVariable(value = "id") Long blogId, @PathVariable(value = "tagId") Long tagId) {
         blogService.addTag(blogId, tagId);
@@ -86,7 +90,8 @@ public class BlogController {
                     @ApiResponse(responseCode = "400", ref = "badRequestResponseAPI"),
                     @ApiResponse(responseCode = "500", ref = "genericErrorAPI"),
                     @ApiResponse(responseCode = "202", description = "Accepted!")
-            }
+            },
+            security = @SecurityRequirement(name = "token")
     )
     public ResponseEntity discardTag(@PathVariable(value = "id") Long blogId, @PathVariable(value = "tagId") Long tagId) {
         blogService.discardTag(blogId, tagId);
@@ -100,7 +105,8 @@ public class BlogController {
                     @ApiResponse(responseCode = "400", ref = "badRequestResponseAPI"),
                     @ApiResponse(responseCode = "500", ref = "genericErrorAPI"),
                     @ApiResponse(responseCode = "200", ref = "blogListSummaryResponseAPI")
-            }
+            },
+            security = @SecurityRequirement(name = "token")
     )
     public ResponseEntity getAllSummariesByUsername(@PathVariable("username") String username) {
         List<BlogDTO> blogPostSummaries = blogService.getAllBlogPostByUsernameWithSummaries(username);
@@ -114,7 +120,8 @@ public class BlogController {
                     @ApiResponse(responseCode = "400", ref = "badRequestResponseAPI"),
                     @ApiResponse(responseCode = "500", ref = "genericErrorAPI"),
                     @ApiResponse(responseCode = "200", ref = "blogListResponseAPI")
-            }
+            },
+            security = @SecurityRequirement(name = "token")
     )
     public ResponseEntity getAllBlogPosts(@PathVariable("username") String username) {
         List<BlogDTO> blogs = blogService.getAllBlogPostsByUsername(username);
@@ -128,7 +135,8 @@ public class BlogController {
                     @ApiResponse(responseCode = "400", ref = "badRequestResponseAPI"),
                     @ApiResponse(responseCode = "500", ref = "genericErrorAPI"),
                     @ApiResponse(responseCode = "200", ref = "blogListResponseAPI")
-            }
+            },
+            security = @SecurityRequirement(name = "token")
     )
     public ResponseEntity getAllBlogPostsByTags(@PathVariable(value = "id") Long tagId) {
         List<BlogDTO> blogs = blogService.getAllBlogPostsByTag(tagId);
@@ -142,7 +150,8 @@ public class BlogController {
                     @ApiResponse(responseCode = "400", ref = "badRequestResponseAPI"),
                     @ApiResponse(responseCode = "500", ref = "genericErrorAPI"),
                     @ApiResponse(responseCode = "200", ref = "blogResponseAPI")
-            }
+            },
+            security = @SecurityRequirement(name = "token")
     )
     public ResponseEntity getBlog(@PathVariable(value = "id") Long id) {
         BlogDTO blog = blogService.getBlogById(id);
@@ -156,7 +165,8 @@ public class BlogController {
                     @ApiResponse(responseCode = "400", ref = "badRequestResponseAPI"),
                     @ApiResponse(responseCode = "500", ref = "genericErrorAPI"),
                     @ApiResponse(responseCode = "200", ref = "blogResponseAPI")
-            }
+            },
+            security = @SecurityRequirement(name = "token")
     )
     public ResponseEntity deleteBlog(@PathVariable(value = "id") Long id) {
         blogService.deleteBlogById(id);

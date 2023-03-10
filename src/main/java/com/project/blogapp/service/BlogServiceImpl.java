@@ -12,6 +12,7 @@ import com.project.blogapp.repository.UserRepository;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
@@ -19,6 +20,7 @@ import java.util.stream.Collectors;
 
 @Service
 @AllArgsConstructor
+@Transactional
 @Slf4j
 public class BlogServiceImpl implements BlogService {
 
@@ -39,6 +41,7 @@ public class BlogServiceImpl implements BlogService {
         User user = userService.getUserFromContextHolder();
         Blog blog = blogDTOToBlogMapper.map(blogDTO);
         user.getBlogs().add(blog);
+        blog.setUser(user);
         userRepository.save(user);
     }
 

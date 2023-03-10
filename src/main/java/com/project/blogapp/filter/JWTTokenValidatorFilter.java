@@ -64,6 +64,6 @@ public class JWTTokenValidatorFilter extends OncePerRequestFilter {
     @Override
     protected boolean shouldNotFilter(HttpServletRequest request) throws ServletException {
         return ApplicationConstants.PERMITTED_ENDPOINTS.contains(request.getServletPath()) ||
-                ApplicationConstants.PERMITTED_EXTENSIONS.stream().anyMatch(extension -> request.getServletPath().contains(request.getServletPath()));
+                ApplicationConstants.PERMITTED_EXTENSIONS.stream().anyMatch(extension -> request.getServletPath().contains(extension));
     }
 }
