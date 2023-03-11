@@ -19,9 +19,14 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.test.context.DynamicPropertyRegistry;
+import org.springframework.test.context.DynamicPropertySource;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.transaction.annotation.Transactional;
+import org.testcontainers.containers.MySQLContainer;
+import org.testcontainers.junit.jupiter.Container;
+import org.testcontainers.junit.jupiter.Testcontainers;
 
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
@@ -37,6 +42,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @AutoConfigureMockMvc
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
+@Testcontainers
 @Transactional
 public class BlogControllerTest {
 
@@ -58,6 +64,17 @@ public class BlogControllerTest {
     private User user;
 
     private String jwt;
+
+    @Container
+    private static MySQLContainer container = new MySQLContainer("mysql:latest")
+            .withDatabaseName("root")
+            .withDatabaseName("blog_app_test")
+            .withPassword("1234");
+
+    @DynamicPropertySource
+    public static void overrideProps(DynamicPropertyRegistry registry){
+        registry.add("spring.datasource.url", container::getJdbcUrl);
+    }
 
     @BeforeEach
     void setUp() {

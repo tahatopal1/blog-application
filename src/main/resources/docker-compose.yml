@@ -1,0 +1,43 @@
+#version: '3.8'
+#
+#services:
+#  db:
+#    image: mysql:latest
+#    environment:
+#      MYSQL_ROOT_PASSWORD: my-secret-pw
+#      MYSQL_DATABASE: blogappdev
+#    ports:
+#      - '3306:3306'
+#    volumes:
+#      - ./mysql-data:/var/lib/mysql
+#
+#  blog-app:
+#    image: tahatopal/blogapp:0.2.0
+#    mem_limit: 700m
+#    ports:
+#      - "8000:8000"
+#    depends_on:
+#      - db
+#
+#volumes: # add persistent data even if container is removed.
+#  my-db:
+
+version: '3'
+services:
+  db:
+    image: mysql:latest
+    environment:
+      MYSQL_ROOT_PASSWORD: my-secret-pw
+      MYSQL_DATABASE: mydatabasedev
+    ports:
+      - '3306:3306'
+    volumes:
+      - ./mysql-data:/var/lib/mysql
+
+  blog-app:
+    image: tahatopal/blogapp:0.2.0
+    mem_limit: 700m
+    ports:
+      - "8000:8000"
+    depends_on:
+      - db
