@@ -2,6 +2,7 @@ package com.project.blogapp.service;
 
 import com.project.blogapp.dto.UserDTO;
 import com.project.blogapp.entity.User;
+import com.project.blogapp.mapper.user.UserDTOToUserMapper;
 import com.project.blogapp.repository.UserRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -16,9 +17,9 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import java.util.HashSet;
 import java.util.Optional;
 
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.BDDMockito.given;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 public class UserServiceTest {
@@ -32,13 +33,16 @@ public class UserServiceTest {
     @Mock
     private UserDetailsService userDetailsService;
 
+    @Mock
+    private UserDTOToUserMapper mapper;
+
     @InjectMocks
     private UserServiceImpl userService;
 
     private User user;
 
     @BeforeEach
-    void beforeAll() {
+    void beforeEach() {
         user = User.builder()
                 .username("testuser")
                 .password(new BCryptPasswordEncoder(10).encode("password"))
@@ -61,11 +65,35 @@ public class UserServiceTest {
         given(userRepository.findByUsername(user.getUsername()))
                 .willReturn(Optional.empty());
 
+        given(mapper.map(userDTO)).willReturn(user);
+
         // when - action or the behaviour that we are going to test
         userService.registerUser(userDTO);
 
         // then - verify the output
         verify(userRepository, times(1)).save(user);
+
+    }
+
+    // JUnit test for registerUser method (negative)
+    @Test
+    public void givenUserObject_whenRegisterUser_ThenError(){
+
+        // given - precondition or setup
+        UserDTO userDTO = UserDTO.builder()
+                .username(user.getUsername())
+                .password(user.getPassword())
+                .displayName(user.getDisplayName())
+                .build();
+
+        given(userRepository.findByUsername(user.getUsername()))
+                .willReturn(Optional.of(user));
+
+        // when - action or the behaviour that we are going to test
+        assertThrows(RuntimeException.class, () -> userService.registerUser(userDTO));
+
+        // then - verify the output
+        verify(userRepository, never()).save(user);
 
     }
 

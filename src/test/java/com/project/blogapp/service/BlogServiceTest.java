@@ -9,7 +9,6 @@ import com.project.blogapp.mapper.blog.BlogToBlogDTOMapper;
 import com.project.blogapp.repository.BlogRepository;
 import com.project.blogapp.repository.TagRepository;
 import com.project.blogapp.repository.UserRepository;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;

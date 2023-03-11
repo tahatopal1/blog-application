@@ -2,6 +2,7 @@ package com.project.blogapp.service;
 
 import com.project.blogapp.dto.UserDTO;
 import com.project.blogapp.entity.User;
+import com.project.blogapp.mapper.user.UserDTOToUserMapper;
 import com.project.blogapp.repository.UserRepository;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -22,6 +23,8 @@ public class UserServiceImpl implements UserService {
     private PasswordEncoder passwordEncoder;
     private UserDetailsService userDetailsService;
 
+    private UserDTOToUserMapper mapper;
+
     @Override
     public void registerUser(UserDTO userDTO) {
 
@@ -33,11 +36,7 @@ public class UserServiceImpl implements UserService {
             throw new RuntimeException("Username is already in use: " + username);
         }
 
-        User user = User.builder()
-                .username(username)
-                .password(passwordEncoder.encode(userDTO.getPassword()))
-                .displayName(userDTO.getDisplayName())
-                .build();
+        User user = mapper.map(userDTO);
 
         userRepository.save(user);
     }
