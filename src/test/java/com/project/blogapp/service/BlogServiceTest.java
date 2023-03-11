@@ -433,7 +433,103 @@ public class BlogServiceTest {
 
     }
 
+    // JUnit test for getBlogById
+    @Test
+    public void givenBlogObject_whenGetBlogById_thenReturnBlog(){
 
+        // given - precondition or setup
+        Blog blog = Blog.builder()
+                .id(1L)
+                .title("Blog Title")
+                .content("Blog Content")
+                .user(user)
+                .build();
 
+        BlogDTO blogDTO = BlogDTO.builder()
+                .id(1L)
+                .title("Blog Title")
+                .content("Blog Content")
+                .build();
+
+        given(blogRepository.findById(blog.getId()))
+                .willReturn(Optional.of(blog));
+
+        given(blogToBlogDTOMapper.map(blog))
+                .willReturn(blogDTO);
+
+        // when - action or the behaviour that we are going to test
+        BlogDTO blogById = blogService.getBlogById(1L);
+
+        // then - verify the output
+        assertThat(blogById.getId()).isEqualTo(blog.getId());
+        assertThat(blogById.getTitle()).isEqualTo(blog.getTitle());
+        assertThat(blogById.getContent()).isEqualTo(blog.getContent());
+
+    }
+
+    // JUnit test for getBlogById (negative)
+    @Test
+    public void givenBlogObject_whenGetBlogById_thenError(){
+
+        // given - precondition or setup
+        long id = 1L;
+
+        given(blogRepository.findById(id))
+                .willReturn(Optional.empty());
+
+        // when - action or the behaviour that we are going to test
+        assertThrows(RuntimeException.class, () -> blogService.getBlogById(id));
+
+        // then - verify the output
+        verify(blogToBlogDTOMapper, never()).map(any(Blog.class));
+
+    }
+
+    // JUnit test for deleteBlogById
+    @Test
+    public void givenBlogObject_whenDeleteBlogById_thenSuccessful(){
+
+        // given - precondition or setup
+        Blog blog = Blog.builder()
+                .id(1L)
+                .title("Blog Title")
+                .content("Blog Content")
+                .user(user)
+                .build();
+
+        given(userService.getUsernameFromContextHolder())
+                .willReturn(user.getUsername());
+
+        given(blogRepository.getBlogByIdAndUsername(blog.getId(), user.getUsername()))
+                .willReturn(Optional.of(blog));
+
+        // when - action or the behaviour that we are going to test
+        blogService.deleteBlogById(blog.getId());
+
+        // then - verify the output
+        verify(blogRepository, times(1)).deleteById(blog.getId());
+
+    }
+
+    // JUnit test for deleteBlogById (negative)
+    @Test
+    public void givenBlogObject_whenDeleteBlogById_thenError(){
+
+        // given - precondition or setup
+        long blogId = 1L;
+
+        given(userService.getUsernameFromContextHolder())
+                .willReturn(user.getUsername());
+
+        given(blogRepository.getBlogByIdAndUsername(blogId, user.getUsername()))
+                .willReturn(Optional.empty());
+
+        // when - action or the behaviour that we are going to test
+        assertThrows(RuntimeException.class, () -> blogService.deleteBlogById(blogId));
+
+        // then - verify the output
+        verify(blogRepository, never()).deleteById(blogId);
+
+    }
 
 }

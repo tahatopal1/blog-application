@@ -13,7 +13,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.authority.AuthorityUtils;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.filter.OncePerRequestFilter;
@@ -30,7 +29,7 @@ public class JWTTokenValidatorFilter extends OncePerRequestFilter {
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
         String jwt = null;
         try{
-            jwt = request.getHeader(SecurityConstants.JWT_HEADER).split(" ")[1].trim();
+            jwt = request.getHeader(SecurityConstants.AUTH_HEADER).split(" ")[1].trim();
         } catch (Exception e){
             log.info("Exception occured during fetching the JWT!");
         }

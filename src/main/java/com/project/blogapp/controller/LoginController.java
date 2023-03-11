@@ -35,9 +35,7 @@ public class LoginController {
     @PostMapping("/login")
     @SecurityRequirement(name = "basicAuth")
     public ResponseEntity authenticateUser(){
-//        Authentication authentication = authenticationProvider
-//                .authenticate(new UsernamePasswordAuthenticationToken(loginRequest.getUsername(), loginRequest.getPassword()));
-//        SecurityContextHolder.getContext().setAuthentication(authentication);
+        log.info("Attemting login...");
         return ResponseEntity.ok().build();
     }
 
@@ -59,6 +57,7 @@ public class LoginController {
                             ),
                     }
             )) @RequestBody UserDTO userDTO){
+        log.info("Attemting signup...");
         userService.registerUser(userDTO);
         return ResponseEntity.accepted().build();
     }
