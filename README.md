@@ -1,13 +1,20 @@
 Blog application
 
-Version 0.1.0
+Version 0.2.0
 
-1. User is able to create only simple blog posts with title and text.
-2. User is able to get simplified list with all blog posts with the title and short summary
-3. User is able to update the title and text of any blog post
-4. User is able to add or remove tag from any blog post
-5. User is able to get all blog posts with specific tag
-6. Unit and Integration tests are located on the src/main/test section with the coverare rate of %100 on classes, %93 on lines
-7. Application uses H2 database with an initial bootstrap file called "schema.sql"
+Updates
+
+1. Spring Security, JWT authentication, JWT Filters for generating and validating JWT tokens. You can check the filters under 'filters' subfolder.
+2. To implement security mechanics, a new entiy called User added into the project.
+3. New endpoints for following functionalities
+   1. The user must be able to view other users posts
+   2. The user must be able to delete his posts
+4. Swagger documentation for every endpoints
+   1. localhost:xxxx/swagger-ui/index.html#/
+5. Logging with SLF4J
+6. Application is now using MySQL database. Migration applied with Flyway Migration Tool. You can check the migration scripts under resources/db/migrations subfolder
+7. Application has a docker image. Link is below:
+   1. https://hub.docker.com/r/tahatopal/blogapp
+8. Testcontainers for integration testing
 
 Application runs as a standart Spring Boot Application.

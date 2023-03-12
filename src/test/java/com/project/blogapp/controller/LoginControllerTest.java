@@ -15,9 +15,14 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.test.context.DynamicPropertyRegistry;
+import org.springframework.test.context.DynamicPropertySource;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.transaction.annotation.Transactional;
+import org.testcontainers.containers.MySQLContainer;
+import org.testcontainers.junit.jupiter.Container;
+import org.testcontainers.junit.jupiter.Testcontainers;
 
 import java.nio.charset.StandardCharsets;
 import java.util.HashSet;
@@ -29,6 +34,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @AutoConfigureMockMvc
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
+@Testcontainers
 @Transactional
 public class LoginControllerTest {
 
@@ -41,7 +47,18 @@ public class LoginControllerTest {
     @Autowired
     private ObjectMapper objectMapper;
 
-    // JUnit test for
+    @Container
+    private static MySQLContainer container = new MySQLContainer("mysql:latest")
+            .withDatabaseName("root")
+            .withDatabaseName("blog_app_test")
+            .withPassword("1234");
+
+    @DynamicPropertySource
+    public static void overrideProps(DynamicPropertyRegistry registry){
+        registry.add("spring.datasource.url", container::getJdbcUrl);
+    }
+
+    // JUnit test for login REST API
     @Test
     public void givenUserBasic_whenAuthenticateUser_thenReturnJWTOnHeader() throws Exception {
 
@@ -73,9 +90,9 @@ public class LoginControllerTest {
 
     }
 
-    // JUnit test for
+    // JUnit test for signup REST API
     @Test
-    public void givenNothing_whenRegisterUser_then() throws Exception {
+    public void givenNothing_whenRegisterUser_thenSuccessful() throws Exception {
 
         // when - action or the behaviour that we are going to test
         UserDTO user = UserDTO.builder()
