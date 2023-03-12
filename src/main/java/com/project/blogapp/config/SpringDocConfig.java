@@ -10,6 +10,7 @@ import io.swagger.v3.oas.models.examples.Example;
 import io.swagger.v3.oas.models.info.Info;
 import io.swagger.v3.oas.models.media.Content;
 import io.swagger.v3.oas.models.responses.ApiResponse;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.MediaType;
@@ -31,10 +32,12 @@ import java.io.IOException;
 )
 public class SpringDocConfig {
 
+    @Autowired
+    ReadJsonFileToJsonObject readJsonFileToJsonObject;
+
     @Bean
     public OpenAPI baseOpenAPI() throws IOException {
 
-        ReadJsonFileToJsonObject readJsonFileToJsonObject = new ReadJsonFileToJsonObject();
 
         ApiResponse genericErrorAPI = new ApiResponse().content(
                 new Content().addMediaType(MediaType.APPLICATION_JSON_VALUE,
