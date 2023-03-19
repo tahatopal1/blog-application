@@ -10,10 +10,9 @@ services:
       -  blog-network
     ports:
       - '3306:3306'
-    volumes:
-      - ./mysql-data:/var/lib/mysql
   blog-app:
     image: tahatopal/blogapp:0.2.0
+    restart: on-failure:10
     mem_limit: 700m
     networks:
       -  blog-network
@@ -27,3 +26,5 @@ services:
       SPRING.DATASOURCE.PASSWORD: my-secret-pw
 networks:
   blog-network:
+volumes:
+  db-data:
