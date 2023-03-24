@@ -12,7 +12,7 @@ import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 
 @Component
-public class ReadJsonFileToJsonObject {
+public class JsonUtils {
 
     @Autowired
     private ResourceLoader resourceLoader;

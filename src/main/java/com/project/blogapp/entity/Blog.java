@@ -24,6 +24,10 @@ public class Blog extends BaseEntity{
     @Column(columnDefinition = "LONGTEXT")
     private String content;
 
+    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
+    @JoinColumn(name = "blog_id")
+    private Set<File> images = new HashSet<>();
+
     @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     @JoinTable(name = "blog_tag",
             joinColumns = {@JoinColumn(name = "blog_id", referencedColumnName = "id")},

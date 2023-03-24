@@ -12,9 +12,12 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.util.List;
 
 @RestController
@@ -143,34 +146,29 @@ public class BlogController {
         return new ResponseEntity(blogs, HttpStatus.OK);
     }
 
-    @GetMapping("/{id}")
-    @Operation(
-            description = "Get a Blog by ID",
-            responses = {
-                    @ApiResponse(responseCode = "400", ref = "badRequestResponseAPI"),
-                    @ApiResponse(responseCode = "500", ref = "genericErrorAPI"),
-                    @ApiResponse(responseCode = "200", ref = "blogResponseAPI")
-            },
-            security = @SecurityRequirement(name = "token")
-    )
-    public ResponseEntity getBlog(@PathVariable(value = "id") Long id) {
-        BlogDTO blog = blogService.getBlogById(id);
-        return new ResponseEntity(blog, HttpStatus.OK);
+
+    @PostMapping("/{id}/file")
+    public ResponseEntity<?> uploadFile(@RequestParam("image")MultipartFile file,
+                                        @PathVariable(name = "id") Long blogId,
+                                        @RequestParam(name = "scale", required = false) Double scale,
+                                        @RequestParam(name = "quality", required = false) Float quality) throws Exception {
+        blogService.uploadFile(file, blogId, scale, quality);
+        return ResponseEntity.status(HttpStatus.OK)
+                .build();
     }
 
-    @DeleteMapping("/{id}")
-    @Operation(
-            description = "Delete a Blog",
-            responses = {
-                    @ApiResponse(responseCode = "400", ref = "badRequestResponseAPI"),
-                    @ApiResponse(responseCode = "500", ref = "genericErrorAPI"),
-                    @ApiResponse(responseCode = "200", ref = "blogResponseAPI")
-            },
-            security = @SecurityRequirement(name = "token")
-    )
-    public ResponseEntity deleteBlog(@PathVariable(value = "id") Long id) {
-        blogService.deleteBlogById(id);
-        return new ResponseEntity(HttpStatus.OK);
+    @GetMapping("/{id}/file/{fileName}")
+    public ResponseEntity<?> downloadFile(@PathVariable Long id, @PathVariable String fileName) throws IOException {
+        byte[] imageData=blogService.downloadFile(id, fileName);
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(imageData);
+    }
+
+    @DeleteMapping("/{id}/file/{fileName}")
+    public ResponseEntity deleteFile(@PathVariable Long id, @PathVariable String fileName){
+        blogService.deleteFile(id, fileName);
+        return ResponseEntity.status(HttpStatus.OK)
+                .build();
     }
 
 }

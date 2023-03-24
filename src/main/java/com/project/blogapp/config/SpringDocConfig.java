@@ -1,6 +1,6 @@
 package com.project.blogapp.config;
 
-import com.project.blogapp.util.ReadJsonFileToJsonObject;
+import com.project.blogapp.util.JsonUtils;
 import io.swagger.v3.oas.annotations.OpenAPIDefinition;
 import io.swagger.v3.oas.annotations.enums.SecuritySchemeType;
 import io.swagger.v3.oas.annotations.security.SecurityScheme;
@@ -33,7 +33,7 @@ import java.io.IOException;
 public class SpringDocConfig {
 
     @Autowired
-    ReadJsonFileToJsonObject readJsonFileToJsonObject;
+    JsonUtils readJsonFileToJsonObject;
 
     @Bean
     public OpenAPI baseOpenAPI() throws IOException {

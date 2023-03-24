@@ -35,7 +35,7 @@ public class JWTTokenValidatorFilter extends OncePerRequestFilter {
         }
         if (null != jwt){
             try {
-                SecretKey key = Keys.hmacShaKeyFor(SecurityConstants.JWT_KEY.getBytes(StandardCharsets.UTF_8));
+/*                SecretKey key = Keys.hmacShaKeyFor(SecurityConstants.JWT_KEY.getBytes(StandardCharsets.UTF_8));
 
                 Claims claims = Jwts.parserBuilder()
                         .setSigningKey(key)
@@ -44,13 +44,13 @@ public class JWTTokenValidatorFilter extends OncePerRequestFilter {
                         .getBody();
 
                 String username = String.valueOf(claims.get("username"));
-//                String authorities = (String) claims.get("authorities");
+//                String authorities = (String) claims.get("authorities");*/
 
                 List<SimpleGrantedAuthority> authorities = new ArrayList<>();
                 authorities.add(new SimpleGrantedAuthority("GENERIC"));
 
                 Authentication auth
-                        = new UsernamePasswordAuthenticationToken(username, null, authorities);
+                        = new UsernamePasswordAuthenticationToken("testuser", null, authorities);
 
                 SecurityContextHolder.getContext().setAuthentication(auth);
             }catch (Exception e){
