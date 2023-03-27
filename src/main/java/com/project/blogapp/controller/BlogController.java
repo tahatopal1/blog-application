@@ -2,6 +2,7 @@ package com.project.blogapp.controller;
 
 import com.project.blogapp.dto.BlogDTO;
 import com.project.blogapp.service.BlogService;
+import com.project.blogapp.service.SearchService;
 import com.project.blogapp.service.UserService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -11,6 +12,8 @@ import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -30,6 +33,8 @@ public class BlogController {
     private BlogService blogService;
 
     private UserService userService;
+
+    private SearchService searchService;
 
     @PostMapping
     @Operation(
@@ -68,6 +73,21 @@ public class BlogController {
     public ResponseEntity updateBlogContent(@PathVariable(value = "id") Long blogId,
                                             @io.swagger.v3.oas.annotations.parameters.RequestBody(ref = "blogRequestAPI") @RequestBody BlogDTO blogDTO) {
         blogService.updateBlog(blogId, blogDTO);
+        return new ResponseEntity(HttpStatus.ACCEPTED);
+    }
+
+    @DeleteMapping("/{id}")
+    @Operation(
+            description = "Delete a Blog",
+            responses = {
+                    @ApiResponse(responseCode = "400", ref = "badRequestResponseAPI"),
+                    @ApiResponse(responseCode = "500", ref = "genericErrorAPI"),
+                    @ApiResponse(responseCode = "202", description = "Accepted!")
+            },
+            security = @SecurityRequirement(name = "token")
+    )
+    public ResponseEntity deleteBlog(@PathVariable(value = "id") Long blogId){
+        blogService.deleteBlogById(blogId);
         return new ResponseEntity(HttpStatus.ACCEPTED);
     }
 
@@ -111,8 +131,9 @@ public class BlogController {
             },
             security = @SecurityRequirement(name = "token")
     )
-    public ResponseEntity getAllSummariesByUsername(@PathVariable("username") String username) {
-        List<BlogDTO> blogPostSummaries = blogService.getAllBlogPostByUsernameWithSummaries(username);
+    public ResponseEntity getAllSummariesByUsername(@PathVariable("username") String username,
+                                                    @PageableDefault(size = 10) Pageable pageable){
+        List<BlogDTO> blogPostSummaries = blogService.getAllBlogPostByUsernameWithSummaries(username, pageable);
         return new ResponseEntity(blogPostSummaries, HttpStatus.OK);
     }
 
@@ -146,6 +167,11 @@ public class BlogController {
         return new ResponseEntity(blogs, HttpStatus.OK);
     }
 
+    @GetMapping("/search")
+    public ResponseEntity<List<BlogDTO>> searchBlogs(@RequestParam String searchText,
+                                                     @PageableDefault(size = 10) Pageable pageable) {
+        return new ResponseEntity<>(searchService.search(searchText, pageable), HttpStatus.OK);
+    }
 
     @PostMapping("/{id}/file")
     public ResponseEntity<?> uploadFile(@RequestParam("image")MultipartFile file,

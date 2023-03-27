@@ -1,6 +1,7 @@
 package com.project.blogapp.service;
 
 import com.project.blogapp.dto.BlogDTO;
+import org.springframework.data.domain.Pageable;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
@@ -10,7 +11,7 @@ public interface BlogService {
 
     void saveBlog(BlogDTO blogDTO);
 
-    List<BlogDTO> getAllBlogPostByUsernameWithSummaries(String username);
+    List<BlogDTO> getAllBlogPostByUsernameWithSummaries(String username, Pageable pageable);
 
     List<BlogDTO> getAllBlogPostsByUsername(String username);
 

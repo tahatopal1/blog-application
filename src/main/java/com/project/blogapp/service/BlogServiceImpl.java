@@ -17,6 +17,7 @@ import com.project.blogapp.util.FileUtils;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.env.Environment;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -39,10 +40,7 @@ public class BlogServiceImpl implements BlogService {
     private BlogToBlogDTOMapper blogToBlogDTOMapper;
     private UserService userService;
     private UserRepository userRepository;
-    private FileRepository imageRepository;
-
     private AmazonS3 s3Client;
-
     private FileUtils fileUtils;
     private Environment environment;
 
@@ -57,9 +55,9 @@ public class BlogServiceImpl implements BlogService {
     }
 
     @Override
-    public List<BlogDTO> getAllBlogPostByUsernameWithSummaries(String username) {
+    public List<BlogDTO> getAllBlogPostByUsernameWithSummaries(String username, Pageable pageable) {
         log.info("{} - getAllBlogPostByUsernameWithSummaries method is working", this.getClass().getSimpleName());
-        List<Blog> blogs = blogRepository.getAllByUsername(username);
+        List<Blog> blogs = blogRepository.getAllByUsernamePaginated(username, pageable);
         return blogs.stream().map(blogToBlogDTOMapper::mapWithSummary).collect(Collectors.toList());
     }
 

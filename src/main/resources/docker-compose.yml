@@ -20,11 +20,21 @@ services:
       - "8081:8081"
     depends_on:
       - db
+      - elasticsearch
     environment:
       SPRING.DATASOURCE.URL: jdbc:mysql://db:3306/mydatabasedev
       SPRING.DATASOURCE.USERNAME: root
       SPRING.DATASOURCE.PASSWORD: my-secret-pw
+  elasticsearch:
+    image: elasticsearch:7.4.2
+    ports:
+      - '9200:9200'
+    environment:
+      - discovery.type=single-node
+    volumes:
+      - ./esdata:/usr/share/elasticsearch/data
 networks:
   blog-network:
 volumes:
   db-data:
+  es-data:
