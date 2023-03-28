@@ -31,9 +31,9 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT
+        , properties = {"spring.datasource.password=1234", "spring.flyway.password=1234"})
 @AutoConfigureMockMvc
-@AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
 @Testcontainers
 @Transactional
 public class LoginControllerTest {
@@ -49,7 +49,6 @@ public class LoginControllerTest {
 
     @Container
     private static MySQLContainer container = new MySQLContainer("mysql:latest")
-            .withDatabaseName("root")
             .withDatabaseName("blog_app_test")
             .withPassword("1234");
 

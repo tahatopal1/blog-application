@@ -17,20 +17,8 @@ public interface BlogService {
 
     void updateBlog(Long blogId, BlogDTO blogDTO);
 
-    List<BlogDTO> getAllBlogPostsByTag(Long id);
-
-    void addTag(Long blogId, Long tagId);
-
-    void discardTag(Long blogId, Long tagId);
-
-    BlogDTO getBlogById(Long id);
+    BlogDTO getBlogById(String username, Long id);
 
     void deleteBlogById(Long id);
-
-    void uploadFile(MultipartFile file, Long blogId, Double scale, Float quality) throws Exception;
-
-    byte[] downloadFile(Long id, String fileName) throws IOException;
-
-    void deleteFile(Long id, String fileName);
 
 }

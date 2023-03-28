@@ -20,9 +20,8 @@ import java.util.Objects;
 @AllArgsConstructor
 public class FileUtils {
 
-    private AmazonS3 s3Client;
 
-    public File saveImage(MultipartFile file, Double scale, Float quality, String bucketName) throws IOException {
+    public File saveImage(MultipartFile file, Double scale, Float quality) throws IOException {
 
         String[] fileTypeFormat = file.getContentType().split("/");
         String fileType = fileTypeFormat[0];

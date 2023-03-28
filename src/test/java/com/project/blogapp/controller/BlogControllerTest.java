@@ -4,7 +4,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.project.blogapp.constants.SecurityConstants;
 import com.project.blogapp.dto.BlogDTO;
 import com.project.blogapp.entity.Blog;
-import com.project.blogapp.entity.Tag;
 import com.project.blogapp.entity.User;
 import com.project.blogapp.repository.BlogRepository;
 import com.project.blogapp.repository.TagRepository;
@@ -14,7 +13,6 @@ import io.jsonwebtoken.security.Keys;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
@@ -39,9 +37,8 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-@AutoConfigureMockMvc
-@AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT
+        , properties = {"spring.datasource.password=1234", "spring.flyway.password=1234"})@AutoConfigureMockMvc
 @Testcontainers
 @Transactional
 public class BlogControllerTest {
@@ -178,66 +175,6 @@ public class BlogControllerTest {
 
     }
 
-    // JUnit test for addTag REST API
-    @Test
-    public void givenTagAndBlogObjects_whenAddTag_thenReturn202() throws Exception {
-
-        // given - precondition or setup
-        Blog blog = Blog.builder()
-                .title("Blog Title")
-                .content("Blog Content")
-                .user(user)
-                .build();
-        blogRepository.save(blog);
-
-        Tag tag = Tag.builder()
-                .tag_name("Generic Tag")
-                .build();
-        tagRepository.save(tag);
-
-        blog.getTags().add(tag);
-        blogRepository.save(blog);
-
-        // when - action or the behaviour that we are going to test
-        ResultActions response = mvc.perform(put("/api/blog/{id}/tag/{tagId}", blog.getId(), tag.getId())
-                .header(SecurityConstants.AUTH_HEADER, "Bearer " + jwt)
-                .contentType(MediaType.APPLICATION_JSON));
-
-        // then - verify the output
-        response.andExpect(status().isAccepted()).andDo(print());
-
-    }
-
-    // JUnit test for discardTag REST API
-    @Test
-    public void givenTagAndBlogObjects_whenDiscardTag_thenReturn202() throws Exception {
-
-        // given - precondition or setup
-        Blog blog = Blog.builder()
-                .title("Blog Title")
-                .content("Blog Content")
-                .user(user)
-                .build();
-        blogRepository.save(blog);
-
-        Tag tag = Tag.builder()
-                .tag_name("Generic Tag")
-                .build();
-        tagRepository.save(tag);
-
-        blog.getTags().add(tag);
-        blogRepository.save(blog);
-
-        // when - action or the behaviour that we are going to test
-        ResultActions response = mvc.perform(delete("/api/blog/{id}/tag/{tagId}", blog.getId(), tag.getId())
-                .header(SecurityConstants.AUTH_HEADER, "Bearer " + jwt)
-                .contentType(MediaType.APPLICATION_JSON));
-
-        // then - verify the output
-        response.andExpect(status().isAccepted()).andDo(print());
-
-    }
-
     // JUnit test for getAllBlogPosts REST API
     @Test
     public void givenListOfBlogs_whenGetAllBlogPosts_thenReturnBlogList() throws Exception {
@@ -284,41 +221,9 @@ public class BlogControllerTest {
 
     }
 
-    // JUnit test for getAllBlogPostsByTags REST API
-    @Test
-    public void givenTagAndBlogObjects_whenGetAllBlogPostsByTags_thenReturnBlogList() throws Exception {
-
-        // given - precondition or setup
-        List<Blog> blogs = new ArrayList<>();
-        blogs.add(Blog.builder().content("Blog Content 1").title("Blog Title 1").user(user).build());
-        blogs.add(Blog.builder().content("Blog Content 2").title("Blog Title 2").user(user).build());
-        blogRepository.saveAll(blogs);
-
-        Tag tag = Tag.builder()
-                .tag_name("Generic Tag")
-                .build();
-        tagRepository.save(tag);
-
-        blogRepository.findAll().forEach(blog -> {
-            blog.getTags().add(tag);
-            blogRepository.save(blog);
-        });
-
-        // when - action or the behaviour that we are going to test
-        ResultActions response = mvc.perform(get("/api/blog/tag/{id}", tag.getId())
-                .header(SecurityConstants.AUTH_HEADER, "Bearer " + jwt));
-
-        // then - verify the output
-        response.andExpect(status().isOk())
-                .andDo(print())
-                .andExpect(jsonPath("$.size()", is(2)));
-
-
-    }
-
     // JUnit test for getBlog REST API
     @Test
-    public void givenBlogObject_whenGetBlog_Then() throws Exception {
+    public void givenBlogObject_whenGetBlog_ThenReturnBlogObject() throws Exception {
 
         // given - precondition or setup
         Blog blog = Blog.builder()
@@ -329,7 +234,8 @@ public class BlogControllerTest {
         blogRepository.save(blog);
 
         // when - action or the behaviour that we are going to test
-        ResultActions response = mvc.perform(get("/api/blog/{id}", blog.getId())
+        ResultActions response = mvc.perform(get("/api/blog/user/{username}/{id}",
+                                                                 user.getUsername(), blog.getId())
                 .header(SecurityConstants.AUTH_HEADER, "Bearer " + jwt));
 
         // then - verify the output
@@ -337,7 +243,6 @@ public class BlogControllerTest {
                 .andDo(print())
                 .andExpect(jsonPath("$.title", is(blog.getTitle())))
                 .andExpect(jsonPath("$.content", is(blog.getContent())));
-
 
     }
 
@@ -359,8 +264,7 @@ public class BlogControllerTest {
                 .contentType(MediaType.APPLICATION_JSON));
 
         // then - verify the output
-        response.andExpect(status().isOk()).andDo(print());
-
+        response.andExpect(status().isAccepted()).andDo(print());
 
     }
 

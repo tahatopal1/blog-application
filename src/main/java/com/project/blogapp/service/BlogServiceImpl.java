@@ -86,57 +86,9 @@ public class BlogServiceImpl implements BlogService {
     }
 
     @Override
-    public List<BlogDTO> getAllBlogPostsByTag(Long id) {
-        log.info("{} - getAllBlogPostsByTag method is working", this.getClass().getSimpleName());
-        Optional<Tag> tag = tagRepository.findById(id);
-        if (tag.isEmpty()) {
-            log.error("{} - Tag with id is null: {}", this.getClass().getSimpleName(), id);
-            throw new RuntimeException("Tag with id is null: " + id);
-        }
-        List<Blog> blogs = blogRepository.getAllBlogsByTagId(id);
-        return blogs.stream().map(blogToBlogDTOMapper::map).collect(Collectors.toList());
-    }
-
-    @Override
-    public void addTag(Long blogId, Long tagId) {
-        log.info("{} - addTag method is working", this.getClass().getSimpleName());
-        String username = userService.getUsernameFromContextHolder();
-        blogRepository.getBlogByIdAndUsername(blogId, username).ifPresentOrElse(blog -> {
-            tagRepository.findById(tagId).ifPresentOrElse(tag -> {
-                blog.getTags().add(tag);
-                blogRepository.save(blog);
-            }, () -> {
-                log.error("{} - Tag with id is null: {}", this.getClass().getSimpleName(), tagId);
-                throw new RuntimeException("Tag with id not null: " + blogId);
-            });
-        }, () -> {
-            log.error("{} - Blog with id is null: {}", this.getClass().getSimpleName(), blogId);
-            throw new RuntimeException("Blog with is not null: " + tagId);
-        });
-    }
-
-    @Override
-    public void discardTag(Long blogId, Long tagId) {
-        log.info("{} - discardTag method is working", this.getClass().getSimpleName());
-        String username = userService.getUsernameFromContextHolder();
-        blogRepository.getBlogByIdAndUsername(blogId, username).ifPresentOrElse(blog -> {
-            tagRepository.findById(tagId).ifPresentOrElse(tag -> {
-                blog.getTags().remove(tag);
-                blogRepository.save(blog);
-            }, () -> {
-                log.error("{} - Tag with id is null: {}", this.getClass().getSimpleName(), tagId);
-                throw new RuntimeException("Tag with id is null: " + blogId);
-            });
-        }, () -> {
-            log.error("{} - Blog with id is null: {}", this.getClass().getSimpleName(), blogId);
-            throw new RuntimeException("Blog with id is null: " + tagId);
-        });
-    }
-
-    @Override
-    public BlogDTO getBlogById(Long id) {
+    public BlogDTO getBlogById(String username, Long id) {
         log.info("{} - getBlogById method is working", this.getClass().getSimpleName());
-        Blog blog = blogRepository.findById(id).orElseThrow(() -> {
+        Blog blog = blogRepository.getBlogByIdAndUsername(id, username).orElseThrow(() -> {
             log.error("{} - There's no such blog with id: {}", this.getClass().getSimpleName(), id);
             throw new RuntimeException("There's no such blog with id: " + id);
         });
@@ -152,72 +104,5 @@ public class BlogServiceImpl implements BlogService {
             throw new RuntimeException("There's no such blog with id: " + id);
         });
     }
-
-    @Override
-    public void uploadFile(MultipartFile file, Long blogId, Double scale, Float quality) throws Exception {
-
-        String username = userService.getUsernameFromContextHolder();
-        Optional<Blog> blogOptional = blogRepository.getBlogByIdAndUsername(blogId, username);
-
-        if (blogOptional.isEmpty()) {
-            throw new RuntimeException("There's no such blog with id: " + blogId);
-        }
-
-        String bucketName = environment.getProperty("application.bucket.name");
-
-        java.io.File convertedFile = fileUtils.saveImage(file, scale, quality, bucketName);
-        s3Client.putObject(new PutObjectRequest(bucketName, file.getOriginalFilename(), convertedFile));
-
-        buildFileAndSave(file, blogOptional);
-    }
-
-    @Override
-    public byte[] downloadFile(Long id, String fileName) throws IOException {
-        String username = userService.getUsernameFromContextHolder();
-        String bucketName = environment.getProperty("application.bucket.name");
-
-        Optional<Blog> blogOptional = blogRepository.getBlogByIdAndUsername(id, username);
-        if(blogOptional.isEmpty()){
-            throw new RuntimeException("There's no such blog with id: " + id);
-        }
-
-        Optional<File> fileOptional = blogOptional.get()
-                .getImages()
-                .stream()
-                .filter(fl -> fl.getName().equals(fileName))
-                .findFirst();
-        if (fileOptional.isEmpty()){
-            throw new RuntimeException("There's no such file with name: " + fileName);
-        }
-
-        S3Object s3Object = s3Client.getObject(bucketName, fileName);
-        S3ObjectInputStream inputStream = s3Object.getObjectContent();
-        byte[] bytes = IOUtils.toByteArray(inputStream);
-        return bytes;
-    }
-
-    @Override
-    public void deleteFile(Long id, String fileName) {
-        String username = userService.getUsernameFromContextHolder();
-        Optional<Blog> blogOptional = blogRepository.getBlogByIdAndUsername(id, username);
-
-        if (blogOptional.isEmpty()) {
-            throw new RuntimeException("There's no such blog with id: " + id);
-        }
-
-        String bucketName = environment.getProperty("application.bucket.name");
-        s3Client.deleteObject(bucketName, fileName);
-    }
-
-    private void buildFileAndSave(MultipartFile file, Optional<Blog> blogOptional) {
-        File f = File.builder()
-                .name(file.getOriginalFilename())
-                .type(file.getContentType()).build();
-
-        Blog blog = blogOptional.get();
-        blog.getImages().add(f);
-        blogRepository.save(blog);
-    }
-
 
 }

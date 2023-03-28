@@ -41,3 +41,14 @@ create table blog_tag
     CONSTRAINT FK_blog FOREIGN KEY (blog_id) REFERENCES blog (id),
     CONSTRAINT FK_tag FOREIGN KEY (tag_id) REFERENCES tag (id)
 );
+
+create table file
+(
+    id                 bigint not null auto_increment primary key,
+    created_date       datetime(6),
+    last_modified_date datetime(6),
+    name               varchar(255),
+    type               varchar(255),
+    blog_id            bigint,
+    CONSTRAINT FK_blog_image FOREIGN KEY (blog_id) REFERENCES blog (id)
+);

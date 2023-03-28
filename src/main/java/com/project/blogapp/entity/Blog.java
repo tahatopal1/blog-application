@@ -5,6 +5,7 @@ import lombok.*;
 import lombok.experimental.SuperBuilder;
 import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.FetchMode;
+import org.hibernate.collection.spi.PersistentList;
 import org.hibernate.search.mapper.pojo.mapping.definition.annotation.FullTextField;
 import org.hibernate.search.mapper.pojo.mapping.definition.annotation.Indexed;
 import org.hibernate.search.mapper.pojo.mapping.definition.annotation.IndexedEmbedded;
@@ -31,7 +32,8 @@ public class Blog extends BaseEntity{
 
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
     @JoinColumn(name = "blog_id")
-    private Set<File> images = new HashSet<>();
+    @Builder.Default
+    private Set<File> files = new HashSet<>();
 
     @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     @JoinTable(name = "blog_tag",
@@ -45,6 +47,5 @@ public class Blog extends BaseEntity{
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
     private User user;
-
 
 }
