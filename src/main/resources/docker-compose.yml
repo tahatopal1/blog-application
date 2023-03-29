@@ -11,7 +11,7 @@ services:
     ports:
       - '3306:3306'
   blog-app:
-    image: tahatopal/blogapp:0.2.0
+    image: tahatopal/blogapp:0.3.0
     restart: on-failure:10
     mem_limit: 700m
     networks:
