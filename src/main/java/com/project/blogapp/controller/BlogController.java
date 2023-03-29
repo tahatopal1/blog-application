@@ -131,6 +131,16 @@ public class BlogController {
     }
 
     @GetMapping("/search")
+    @Operation(
+            description = "Loose searching on title and tag name",
+            responses = {
+                    @ApiResponse(responseCode = "400", ref = "badRequestResponseAPI"),
+                    @ApiResponse(responseCode = "500", ref = "genericErrorAPI"),
+                    @ApiResponse(responseCode = "200", ref = "blogListResponseAPI")
+            },
+            security = @SecurityRequirement(name = "token")
+
+    )
     public ResponseEntity<List<BlogDTO>> searchBlogs(@RequestParam String searchText,
                                                      @PageableDefault(size = 10) Pageable pageable) {
         return new ResponseEntity<>(searchService.search(searchText, pageable), HttpStatus.OK);

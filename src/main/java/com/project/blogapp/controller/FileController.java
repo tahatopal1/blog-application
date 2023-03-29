@@ -1,6 +1,7 @@
 package com.project.blogapp.controller;
 
 import com.project.blogapp.service.FileService;
+import io.swagger.v3.oas.annotations.Hidden;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -15,6 +16,7 @@ import java.io.IOException;
 @RequestMapping("/api/blog")
 @AllArgsConstructor
 @Tag(name = "File")
+@Hidden
 @Slf4j
 public class FileController {
 
