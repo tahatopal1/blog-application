@@ -16,6 +16,7 @@ services:
     mem_limit: 700m
     networks:
       -  blog-network
+      -  es-network
     ports:
       - "8081:8081"
     depends_on:
@@ -25,7 +26,9 @@ services:
       SPRING.DATASOURCE.URL: jdbc:mysql://db:3306/mydatabasedev
       SPRING.DATASOURCE.USERNAME: root
       SPRING.DATASOURCE.PASSWORD: my-secret-pw
+      SPRING.JPA.PROPERTIES.HIBERNATE.SEARCH.BACKEND.HOSTS: es:9200
   elasticsearch:
+    hostname: es
     image: elasticsearch:7.4.2
     ports:
       - '9200:9200'
@@ -33,12 +36,16 @@ services:
       - discovery.type=single-node
     volumes:
       - ./esdata:/usr/share/elasticsearch/data
+    networks:
+      - es-network
   sonar:
     image: sonarqube:9.9.0-community
     ports:
       - '9000:9000'
 networks:
   blog-network:
+  es-network:
+    driver: bridge
 volumes:
   db-data:
   es-data:
