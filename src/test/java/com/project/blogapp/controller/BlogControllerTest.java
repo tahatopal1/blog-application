@@ -39,10 +39,9 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-@AutoConfigureMockMvc
-@AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
+@SpringBootTest
 @Testcontainers
+@AutoConfigureMockMvc
 @Transactional
 public class BlogControllerTest {
 
@@ -74,6 +73,12 @@ public class BlogControllerTest {
     @DynamicPropertySource
     public static void overrideProps(DynamicPropertyRegistry registry){
         registry.add("spring.datasource.url", container::getJdbcUrl);
+        registry.add("spring.datasource.username", container::getUsername);
+        registry.add("spring.datasource.password", container::getPassword);
+        registry.add("spring.datasource.driver-class-name", container::getDriverClassName);
+        registry.add("spring.flyway.user", container::getUsername);
+        registry.add("spring.flyway.password", container::getPassword);
+        registry.add("spring.flyway.locations", () -> "classpath:db/migration-test-container");
     }
 
     @BeforeEach
