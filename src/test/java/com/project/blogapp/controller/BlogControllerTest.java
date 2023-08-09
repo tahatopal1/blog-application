@@ -10,8 +10,7 @@ import com.project.blogapp.repository.TagRepository;
 import com.project.blogapp.repository.UserRepository;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -23,22 +22,23 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.transaction.annotation.Transactional;
 import org.testcontainers.containers.MySQLContainer;
+import org.testcontainers.elasticsearch.ElasticsearchContainer;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
+import org.testcontainers.utility.DockerImageName;
 
 import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashSet;
-import java.util.List;
+import java.util.*;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT
-        , properties = {"spring.datasource.password=1234", "spring.flyway.password=1234"})@AutoConfigureMockMvc
+@SpringBootTest(properties = {"spring.jpa.properties.hibernate.search.enabled=true"})
+@AutoConfigureMockMvc
 @Testcontainers
 @Transactional
 public class BlogControllerTest {
@@ -68,9 +68,22 @@ public class BlogControllerTest {
             .withDatabaseName("blog_app_test")
             .withPassword("1234");
 
+//    @Container
+//    private static final ElasticsearchContainer elasticsearch = new ElasticsearchContainer(DockerImageName
+//            .parse("docker.elastic.co/elasticsearch/elasticsearch:7.4.2")
+//    );
+
     @DynamicPropertySource
     public static void overrideProps(DynamicPropertyRegistry registry){
+//        elasticsearch.start();
+//        registry.add("spring.jpa.properties.hibernate.search.backend.hosts", elasticsearch::getHttpHostAddress);
         registry.add("spring.datasource.url", container::getJdbcUrl);
+        registry.add("spring.datasource.username", container::getUsername);
+        registry.add("spring.datasource.password", container::getPassword);
+        registry.add("spring.datasource.driver-class-name", container::getDriverClassName);
+        registry.add("spring.flyway.user", container::getUsername);
+        registry.add("spring.flyway.password", container::getPassword);
+        registry.add("spring.flyway.locations", () -> "classpath:db/migration-test-container");
     }
 
     @BeforeEach
@@ -101,6 +114,11 @@ public class BlogControllerTest {
                 .signWith(Keys.hmacShaKeyFor(SecurityConstants.JWT_KEY.getBytes(StandardCharsets.UTF_8)))
                 .compact();
     }
+
+//    @AfterAll
+//    static void afterAll() {
+//        elasticsearch.stop();
+//    }
 
     // JUnit test for saveBlog REST API
     @Test
@@ -268,5 +286,38 @@ public class BlogControllerTest {
 
     }
 
+    @Test
+    @Disabled
+    void givenSearchText_whenSearchBlogs_thenReturnBlogList() throws Exception {
+
+        saveBlogsBulkOperation();
+        String searchText = "Dummy";
+
+        mvc.perform(get("/api/blog/search", user.getUsername())
+                        .header(SecurityConstants.AUTH_HEADER, "Bearer " + jwt)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .param("searchText", searchText))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.size()", is(10)));
+
+    }
+
+    private void saveBlogsBulkOperation() {
+        StringBuilder stringBuilder = new StringBuilder();
+        IntStream.range(0, 10)
+                .forEach((v) -> stringBuilder.append("Productivity"));
+        String dummyContent = stringBuilder.toString();
+
+        Set<Blog> blogCollection = IntStream.range(3, 13)
+                .mapToObj(value -> {
+                    Blog blog = Blog.builder()
+                            .title("Dummy Title " + value)
+                            .content(dummyContent)
+                            .build();
+                    return blog;
+                })
+                .collect(Collectors.toSet());
+        blogRepository.saveAll(blogCollection);
+    }
 
 }

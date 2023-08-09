@@ -1,16 +1,13 @@
 package com.project.blogapp.controller;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.project.blogapp.constants.SecurityConstants;
-import com.project.blogapp.dto.BlogDTO;
 import com.project.blogapp.dto.UserDTO;
 import com.project.blogapp.entity.User;
 import com.project.blogapp.repository.UserRepository;
 import org.apache.commons.codec.binary.Base64;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
@@ -23,16 +20,13 @@ import org.springframework.transaction.annotation.Transactional;
 import org.testcontainers.containers.MySQLContainer;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
-
-import java.nio.charset.StandardCharsets;
 import java.util.HashSet;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT
-        , properties = {"spring.datasource.password=1234", "spring.flyway.password=1234"})
+@SpringBootTest
 @AutoConfigureMockMvc
 @Testcontainers
 @Transactional
@@ -55,6 +49,12 @@ public class LoginControllerTest {
     @DynamicPropertySource
     public static void overrideProps(DynamicPropertyRegistry registry){
         registry.add("spring.datasource.url", container::getJdbcUrl);
+        registry.add("spring.datasource.username", container::getUsername);
+        registry.add("spring.datasource.password", container::getPassword);
+        registry.add("spring.datasource.driver-class-name", container::getDriverClassName);
+        registry.add("spring.flyway.user", container::getUsername);
+        registry.add("spring.flyway.password", container::getPassword);
+        registry.add("spring.flyway.locations", () -> "classpath:db/migration-test-container");
     }
 
     // JUnit test for login REST API

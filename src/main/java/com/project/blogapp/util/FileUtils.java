@@ -1,6 +1,5 @@
 package com.project.blogapp.util;
 
-import com.amazonaws.services.s3.AmazonS3;
 import com.project.blogapp.constants.enums.FileConstant;
 import com.project.blogapp.constants.enums.FileFormat;
 import lombok.AllArgsConstructor;
@@ -62,15 +61,12 @@ public class FileUtils {
         ByteArrayInputStream bis = new ByteArrayInputStream(bytes);
         BufferedImage originalImage = ImageIO.read(bis);
 
-        // Get an ImageWriter for the JPEG format
         ImageWriter jpgWriter = ImageIO.getImageWritersByFormatName(imageFormat).next();
 
-        // Set the compression quality
         ImageWriteParam jpgWriteParam = jpgWriter.getDefaultWriteParam();
         jpgWriteParam.setCompressionMode(ImageWriteParam.MODE_EXPLICIT);
         jpgWriteParam.setCompressionQuality(quality);
 
-        // Write the compressed image to a ByteArrayOutputStream
         ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
         try (ImageOutputStream imageOutputStream = ImageIO.createImageOutputStream(byteArrayOutputStream)) {
             jpgWriter.setOutput(imageOutputStream);

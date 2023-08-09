@@ -1,28 +1,14 @@
 package com.project.blogapp.service;
 
-import com.amazonaws.services.s3.AmazonS3;
-import com.amazonaws.services.s3.model.PutObjectRequest;
-import com.amazonaws.services.s3.model.S3Object;
-import com.amazonaws.services.s3.model.S3ObjectInputStream;
-import com.amazonaws.util.IOUtils;
 import com.project.blogapp.dto.BlogDTO;
 import com.project.blogapp.entity.Blog;
-import com.project.blogapp.entity.File;
 import com.project.blogapp.entity.Tag;
-import com.project.blogapp.entity.User;
-import com.project.blogapp.mapper.blog.BlogDTOToBlogMapper;
 import com.project.blogapp.mapper.blog.BlogToBlogDTOMapper;
 import com.project.blogapp.repository.*;
-import com.project.blogapp.util.FileUtils;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.core.env.Environment;
-import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.multipart.MultipartFile;
-
-import java.io.IOException;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;

@@ -1,6 +1,5 @@
 package com.project.blogapp.controller;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.project.blogapp.constants.SecurityConstants;
 import com.project.blogapp.entity.Blog;
 import com.project.blogapp.entity.Tag;
@@ -38,8 +37,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT
-        , properties = {"spring.datasource.password=1234", "spring.flyway.password=1234"})@AutoConfigureMockMvc
+@SpringBootTest
+@AutoConfigureMockMvc
 @Testcontainers
 @Transactional
 public class TagControllerTest {
@@ -68,6 +67,12 @@ public class TagControllerTest {
     @DynamicPropertySource
     public static void overrideProps(DynamicPropertyRegistry registry){
         registry.add("spring.datasource.url", container::getJdbcUrl);
+        registry.add("spring.datasource.username", container::getUsername);
+        registry.add("spring.datasource.password", container::getPassword);
+        registry.add("spring.datasource.driver-class-name", container::getDriverClassName);
+        registry.add("spring.flyway.user", container::getUsername);
+        registry.add("spring.flyway.password", container::getPassword);
+        registry.add("spring.flyway.locations", () -> "classpath:db/migration-test-container");
     }
 
     @BeforeEach

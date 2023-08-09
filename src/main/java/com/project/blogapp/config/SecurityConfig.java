@@ -4,15 +4,11 @@ import com.project.blogapp.filter.JWTTokenGeneratorFilter;
 import com.project.blogapp.filter.JWTTokenValidatorFilter;
 import com.project.blogapp.repository.UserRepository;
 import com.project.blogapp.service.UserDetailsServiceImpl;
-import com.project.blogapp.service.UserServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.ImportAutoConfiguration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
-import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.AuthenticationProvider;
-import org.springframework.security.authentication.ProviderManager;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -22,7 +18,6 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
-import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
 
 
@@ -45,7 +40,6 @@ public class SecurityConfig {
                 .addFilterAfter(new JWTTokenGeneratorFilter(), BasicAuthenticationFilter.class)
                 .authorizeHttpRequests(registry ->
                         registry
-//                                .requestMatchers("/swagger-ui/**", "/*.js", "/*.html", "/*.css", "/v3/api-docs/**","/error").permitAll()
                                 .requestMatchers("/swagger-ui/**","/v3/api-docs/**","/error").permitAll()
                                 .requestMatchers(HttpMethod.POST, "/signup").permitAll()
                                 .requestMatchers("/api/blog/**").hasAuthority("GENERIC")

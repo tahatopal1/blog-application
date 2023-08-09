@@ -28,22 +28,19 @@ public class FileController {
                                         @RequestParam(name = "scale", required = false) Double scale,
                                         @RequestParam(name = "quality", required = false) Float quality) throws Exception {
         fileService.uploadFile(file, blogId, scale, quality);
-        return ResponseEntity.status(HttpStatus.OK)
-                .build();
+        return ResponseEntity.status(HttpStatus.OK).build();
     }
 
     @GetMapping("/{id}/file/{fileName}")
     public ResponseEntity<?> downloadFile(@PathVariable Long id, @PathVariable String fileName) throws IOException {
         byte[] imageData=fileService.downloadFile(id, fileName);
-        return ResponseEntity.status(HttpStatus.OK)
-                .body(imageData);
+        return ResponseEntity.status(HttpStatus.OK).body(imageData);
     }
 
     @DeleteMapping("/{id}/file/{fileName}")
     public ResponseEntity deleteFile(@PathVariable Long id, @PathVariable String fileName){
         fileService.deleteFile(id, fileName);
-        return ResponseEntity.status(HttpStatus.OK)
-                .build();
+        return ResponseEntity.status(HttpStatus.OK).build();
     }
 
 }
